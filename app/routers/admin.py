@@ -16,7 +16,7 @@ async def create_worker(
     if existing:
         raise HTTPException(status_code=400, detail="Username already exists")
     hashed_password = deps.get_password_hash(user_in.password)
-    return await crud.create_user(db, user_in, hashed_password)
+    return await crud.create_user(db, user_in, models.Role.worker, hashed_password)
 
 
 @router.get("/workers", response_model=schemas.PagedUsers)
@@ -26,7 +26,7 @@ async def list_workers(
     db: AsyncSession = Depends(get_db),
     _: models.User = Depends(deps.require_admin),
 ):
-    total, users = await crud.get_users(db, skip=(page - 1) * size, limit=size)
+    total, users = await crud.get_workers(db, skip=(page - 1) * size, limit=size)
     return {"meta": {"total": total, "page": page, "size": size}, "items": users}
 
 
@@ -34,7 +34,7 @@ async def list_workers(
 async def delete_worker(
     worker_id: int, db: AsyncSession = Depends(get_db), _: models.User = Depends(deps.require_admin)
 ):
-    await crud.delete_user(db, worker_id)
+    await crud.delete_user(db, worker_id, models.Role.worker)
     return None
 
 
@@ -51,7 +51,7 @@ async def list_tickets(
     return {"meta": {"total": total, "page": page, "size": size}, "items": tickets}
 
 
-@router.post("/tickets/{ticket_id}/assign", status_code=status.HTTP_200_OK)
+@router.post("/tickets/{ticket_id}/assign/{worker_id}", status_code=status.HTTP_200_OK)
 async def assign_ticket(
     ticket_id: int, worker_id: int, db: AsyncSession = Depends(get_db), _: models.User = Depends(deps.require_admin)
 ):

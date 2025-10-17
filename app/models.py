@@ -18,7 +18,8 @@ class User(Base):
     full_name = Column(String(200), nullable=True)
     hashed_password = Column(String(200), nullable=False)
     role = Column(Enum(Role), nullable=False)
-    tickets = relationship('Ticket', back_populates='worker')
+
+    tickets = relationship('Ticket', back_populates='worker', lazy='joined')
 
 
 class Client(Base):
@@ -27,7 +28,8 @@ class Client(Base):
     name = Column(String(200), nullable=False)
     email = Column(String(200), nullable=True)
     phone = Column(String(50), nullable=True)
-    tickets = relationship('Ticket', back_populates='client')
+
+    tickets = relationship('Ticket', back_populates='client', lazy='joined')
 
 
 class Status(str, enum.Enum):
@@ -48,5 +50,5 @@ class Ticket(Base):
     client_id = Column(Integer, ForeignKey('clients.id'), nullable=False)
     worker_id = Column(Integer, ForeignKey('users.id'), nullable=True)
 
-    client = relationship('Client', back_populates='tickets')
-    worker = relationship('User', back_populates='tickets')
+    client = relationship('Client', back_populates='tickets', lazy='joined')
+    worker = relationship('User', back_populates='tickets', lazy='joined')

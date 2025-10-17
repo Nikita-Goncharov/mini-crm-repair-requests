@@ -1,15 +1,12 @@
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
 
-from app.db import engine
-from app import models
 from app.routers import auth, public, admin, worker
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    async with engine.begin() as conn:
-        await conn.run_sync(models.Base.metadata.create_all)
+    # on startup
     yield
     # on shutdown
 

@@ -24,6 +24,7 @@ exclude = [
     "__pypackages__",
     "__pycache__",
     "_build",
+    "alembic",
     "buck-out",
     "build",
     "dist",

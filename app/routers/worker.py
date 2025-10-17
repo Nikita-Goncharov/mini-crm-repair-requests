@@ -21,15 +21,15 @@ async def list_my_tickets(
     return {"meta": {"total": total, "page": page, "size": size}, "items": tickets}
 
 
-@router.post("/tickets/{ticket_id}/status")
+@router.put("/tickets/{ticket_id}/status")
 async def update_ticket_status(
     ticket_id: int,
-    status: schemas.Status,
+    status: schemas.TicketStatus,
     db: AsyncSession = Depends(get_db),
     current_user: models.User = Depends(deps.require_worker),
 ):
     ticket = await crud.get_ticket(db, ticket_id)
     if not ticket or ticket.worker_id != current_user.id:
         raise HTTPException(status_code=404, detail="Ticket not found or unauthorized")
-    await crud.update_ticket_status(db, ticket_id, status.value)
-    return {"msg": f"Ticket marked as {status.value}"}
+    await crud.update_ticket_status(db, ticket_id, status.status)
+    return {"msg": f"Ticket marked as {status.status}"}

@@ -11,9 +11,9 @@ async def get_user_by_username(db: AsyncSession, username: str):
     return q.scalars().first()
 
 
-async def create_user(db: AsyncSession, user_in: schemas.UserCreate, hashed_password: str):
+async def create_user(db: AsyncSession, user_in: schemas.UserCreate, role: models.Role, hashed_password: str):
     db_user = models.User(
-        username=user_in.username, full_name=user_in.full_name, hashed_password=hashed_password, role=user_in.role
+        username=user_in.username, full_name=user_in.full_name, hashed_password=hashed_password, role=role
     )
     db.add(db_user)
     await db.commit()
@@ -21,15 +21,17 @@ async def create_user(db: AsyncSession, user_in: schemas.UserCreate, hashed_pass
     return db_user
 
 
-async def get_users(db: AsyncSession, skip: int = 0, limit: int = 20):
-    q = await db.execute(select(models.User).offset(skip).limit(limit))
-    items = q.scalars().all()
-    total = (await db.execute(select(func.count(models.User.id)))).scalar_one()
+async def get_workers(db: AsyncSession, skip: int = 0, limit: int = 20):
+    q = await db.execute(select(models.User).where(models.User.role == models.Role.worker).offset(skip).limit(limit))
+    items = q.unique().scalars().all()
+    total = (
+        await db.execute(select(func.count(models.User.id)).where(models.User.role == models.Role.worker))
+    ).scalar_one()
     return total, items
 
 
-async def delete_user(db: AsyncSession, user_id: int):
-    await db.execute(delete(models.User).where(models.User.id == user_id))
+async def delete_user(db: AsyncSession, user_id: int, role: models.Role):
+    await db.execute(delete(models.User).where(models.User.id == user_id, models.User.role == role))
     await db.commit()
 
 
@@ -58,7 +60,13 @@ async def get_tickets_for_worker(
         stmt = stmt.where(models.Ticket.title.ilike(f"%{search}%"))
     if status:
         stmt = stmt.where(models.Ticket.status == status)
-    total = (await db.execute(select(func.count(models.Ticket.id)).select_from(stmt.subquery()))).scalar_one()
+    total = (
+        await db.execute(
+            select(func.count(models.Ticket.id))
+            .where(models.Ticket.worker_id == worker_id)
+            .select_from(stmt.subquery())
+        )
+    ).scalar_one()
     stmt = stmt.offset((page - 1) * size).limit(size)
     res = await db.execute(stmt)
     return total, res.scalars().all()

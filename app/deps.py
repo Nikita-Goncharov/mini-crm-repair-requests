@@ -10,8 +10,9 @@ from fastapi.security import OAuth2PasswordBearer
 pwd_context = CryptContext(schemes=["bcrypt"])
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/token")
 
-# async def verify_password(plain, hashed):
-#     return pwd_context.verify(plain, hashed)
+
+def verify_password(plain, hashed):
+    return pwd_context.verify(plain, hashed)
 
 
 def get_password_hash(password: str) -> str:
@@ -50,6 +51,6 @@ async def require_worker(
     current_user: models.User = Depends(get_current_user),
 ) -> models.User:
     if current_user.role != models.Role.worker:
-        return HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Worker privileges required")
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Worker privileges required")
 
     return current_user

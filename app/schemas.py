@@ -31,7 +31,6 @@ class TokenPayload(BaseModel):
 class UserCreate(BaseModel):
     username: str
     password: str
-    role: Role
     full_name: Optional[str]
 
 
@@ -97,3 +96,7 @@ class PagedTickets(BaseModel):
 class PagedUsers(BaseModel):
     meta: Page
     items: list[UserRead]
+
+
+class TicketStatus(BaseModel):
+    status: Status
