@@ -51,9 +51,9 @@ async def list_tickets(
     return {"meta": {"total": total, "page": page, "size": size}, "items": tickets}
 
 
-@router.post("/tickets/{ticket_id}/assign/{worker_id}", status_code=status.HTTP_200_OK)
+@router.post("/tickets/{ticket_id}/assign", status_code=status.HTTP_200_OK)
 async def assign_ticket(
-    ticket_id: int, worker_id: int, db: AsyncSession = Depends(get_db), _: models.User = Depends(deps.require_admin)
+    ticket_id: int, worker: schemas.WorkerId, db: AsyncSession = Depends(get_db), _: models.User = Depends(deps.require_admin)
 ):
-    await crud.assign_ticket(db, ticket_id, worker_id)
+    await crud.assign_ticket(db, ticket_id, worker.worker_id)
     return {"msg": "Ticket assigned successfully"}

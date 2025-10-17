@@ -100,3 +100,6 @@ class PagedUsers(BaseModel):
 
 class TicketStatus(BaseModel):
     status: Status
+
+class WorkerId(BaseModel):
+    worker_id: int
