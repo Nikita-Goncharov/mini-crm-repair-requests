@@ -73,7 +73,7 @@ alembic revision --autogenerate -m "message"
 alembic upgrade head
 ```
 
-**! When using Docker, migrations are automatically created applied on container startup.**
+**! When using Docker, migrations are automatically applied on container startup.**
 
 ---
 

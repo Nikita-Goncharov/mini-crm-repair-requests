@@ -28,7 +28,7 @@ services:
       ACCESS_TOKEN_EXPIRE_MINUTES: ${ACCESS_TOKEN_EXPIRE_MINUTES}
     ports:
       - "8000:8000"
-    command: bash -c "alembic revision --autogenerate &&
+    command: bash -c "
       alembic upgrade head &&
       echo '✅ Migrations applied. Waiting for DB to be ready...' &&
       sleep 2 &&

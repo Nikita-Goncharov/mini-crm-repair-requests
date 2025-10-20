@@ -21,7 +21,10 @@ services:
       ACCESS_TOKEN_EXPIRE_MINUTES: ${ACCESS_TOKEN_EXPIRE_MINUTES}
     ports:
       - "8000:8000"
-    command: bash -c "alembic upgrade head && 
+    command: bash -c "
+      alembic upgrade head &&
+      echo '✅ Migrations applied. Waiting for DB to be ready...' &&
+      sleep 2 &&
       python init_data.py &&
       uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
     volumes:
