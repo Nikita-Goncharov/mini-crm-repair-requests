@@ -11,7 +11,7 @@ Built with **FastAPI**, **SQLAlchemy**, **PostgreSQL**, and **Alembic**.
 ```bash
 git clone https://github.com/Nikita-Goncharov/mini-crm-repair-requests.git
 cd mini-crm-repair-requests
-````
+```
 
 ### 2. Configure environment variables
 
