@@ -38,7 +38,9 @@ ACCESS_TOKEN_EXPIRE_MINUTES=60
 ### 3. Run with Docker Compose
 
 ```bash
-docker compose up --build
+docker compose up --build  # make local image
+OR
+docker compose -f docker-compose.docker-hub.yaml up --build  # load image from dockerhub
 ```
 
 The backend will be available at:
@@ -71,7 +73,7 @@ alembic revision --autogenerate -m "message"
 alembic upgrade head
 ```
 
-When using Docker, migrations are automatically applied on container startup.
+**! When using Docker, migrations are automatically created applied on container startup.**
 
 ---
 
